@@ -2,6 +2,10 @@
 name = "plum_lang"
 version = "0.0.1"
 edition = "2018"
+description = "A simple toy lang."
+homepage = "https://shizuku.github.io/plum_lang"
+repository = "https://github.com/shizuku/plum_lang"
+license-file = "LICENSE"
 
 [[bin]]
 name = "plum"
