@@ -1,6 +1,6 @@
 use crate::ast::{
-  BadDecl, BadExpr, BadStmt, BasicLit, BinaryExpr, CallExpr, Decl, DeclStmt, Expr, ExprStmt, Ident,
-  ParenExpr, Stmt, UnaryExpr, ValDecl, VarDecl,
+  BadDecl, BadExpr, BadStmt, BasicLit, BinaryExpr, CallExpr, Decl, DeclStmt, Expr, ExprStmt, File,
+  Ident, ParenExpr, Stmt, UnaryExpr, ValDecl, VarDecl,
 };
 use crate::lexer::Lexer;
 use crate::token::{Token, LOWEST_PREC};
@@ -24,8 +24,9 @@ impl Parser {
     p
   }
 
-  pub fn parse_file(&mut self) -> Vec<Box<dyn Stmt>> {
-    self.parse_stmts()
+  pub fn parse_file(&mut self) -> Box<File> {
+    let stmts = self.parse_stmts();
+    Box::from(File { stmts })
   }
 
   fn next(&mut self) {

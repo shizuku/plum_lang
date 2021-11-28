@@ -6,6 +6,7 @@ pub mod token;
 use std::env;
 use std::fs;
 
+use ast::Node;
 use lexer::Lexer;
 use parser::Parser;
 
@@ -23,5 +24,6 @@ fn main() {
   // }
   let mut parser = Parser::new(lexer);
   let ast = parser.parse_file();
-  println!("{:?}", ast);
+  // println!("{:?}", ast);
+  ast.print(0);
 }
