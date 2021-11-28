@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "rusts"
-version = "0.1.0"
+name = "plum_lang"
+version = "0.0.1"
