@@ -107,11 +107,21 @@ impl Lexer {
   fn lex_number(&mut self) -> (Token, usize) {
     let pos = self.offset;
     let mut lit = String::from("");
-    while is_number(self.ch) || self.ch == '.' || self.ch == '_' {
+    while is_number(self.ch) || self.ch == '_' {
       lit.push(self.ch);
       self.next();
     }
-    (Token::Integer(lit), pos)
+    if self.ch == '.' {
+      lit.push(self.ch);
+      self.next();
+      while is_number(self.ch) || self.ch == '_' {
+        lit.push(self.ch);
+        self.next();
+      }
+      (Token::Float(lit), pos)
+    } else {
+      (Token::Integer(lit), pos)
+    }
   }
 
   fn lex_string(&mut self) -> (Token, usize) {

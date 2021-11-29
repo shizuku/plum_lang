@@ -218,7 +218,7 @@ impl Parser {
           name: lit.clone(),
         }))
       }
-      Token::Integer(_) | Token::String(_) => {
+      Token::Integer(_) | Token::Float(_) | Token::String(_) => {
         let pos = self.pos;
         let tok = self.tok.clone();
         self.next();
