@@ -37,7 +37,7 @@ impl Lexer {
     let ch = self.ch;
     let mut ist = false;
     let tok = if is_letter(ch) || ch == '_' {
-      let (t, i) = lookup(self.lex_identifier());
+      let (t, i) = lookup(self.lex_ident());
       if i {
         ist = i;
       }
@@ -95,7 +95,7 @@ impl Lexer {
     tok
   }
 
-  fn lex_identifier(&mut self) -> Token {
+  fn lex_ident(&mut self) -> Token {
     let mut lit = String::from("");
     while is_letter(self.ch) || is_dec(self.ch) || self.ch == '_' {
       lit.push(self.ch);
@@ -175,7 +175,6 @@ fn lookup(tok: Token) -> (Token, bool) {
     match lit.as_str() {
       "fun" => (Token::Fun, false),
       "var" => (Token::Var, false),
-      "val" => (Token::Val, false),
       "import" => (Token::Import, false),
       "return" => (Token::Return, true),
       _ => (Token::Ident(lit), true),

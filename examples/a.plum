@@ -1,5 +1,11 @@
 var a = 1
-val b = 2
+var b = 2
 
-println("hello world")
-println(a, b, 1 + 2, 1 + 2 * 3, 1 + (2 - 3))
+println(a)
+println(b)
+
+a = a + 100
+println(a)
+
+b = a+b+34
+println(b)

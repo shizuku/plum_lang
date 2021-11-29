@@ -43,7 +43,6 @@ pub enum Token {
 
   Fun,
   Var,
-  Val,
   Import,
   Return,
 }
