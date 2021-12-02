@@ -44,6 +44,12 @@ fn interpret(c: Command) {
   };
   let mut parser = Parser::new(lexer);
   let ast = parser.parse_file();
+  if parser.errors.len() != 0 {
+    for i in parser.errors {
+      println!("{} {:?}", i.0, i.1);
+    }
+    panic!("parser errors")
+  }
   let mut interpreter = Interpreter::new();
   interpreter.visit_file(&*ast);
 }
@@ -56,6 +62,12 @@ fn print_ast(c: Command) {
   };
   let mut parser = Parser::new(lexer);
   let ast = parser.parse_file();
+  if parser.errors.len() != 0 {
+    for i in parser.errors {
+      println!("{} {:?}", i.0, i.1);
+    }
+    panic!("parser errors")
+  }
   ast.print(0);
 }
 

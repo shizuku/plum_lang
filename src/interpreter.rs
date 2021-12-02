@@ -35,13 +35,13 @@ impl Interpreter {
       Expr::Ident(id) => match id.name.as_str() {
         "print" => {
           for i in args {
-            print!("{}", i);
+            print!("{} ", i);
           }
           f64::NAN
         }
         "println" => {
           for i in args {
-            print!("{}", i);
+            print!("{} ", i);
           }
           print!("\n");
           f64::NAN

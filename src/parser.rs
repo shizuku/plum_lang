@@ -6,7 +6,7 @@ pub struct Parser {
   tok: Token,
   pos: usize,
   lexer: Lexer,
-  errors: Vec<(usize, String)>,
+  pub errors: Vec<(usize, String)>,
 }
 
 impl Parser {
@@ -41,6 +41,22 @@ impl Parser {
   }
 }
 
+macro_rules! expect {
+  ($self:ident, $tok:path ) => {
+    if let $tok = $self.tok {
+      let pos = $self.pos;
+      $self.next();
+      pos
+    } else {
+      $self.error(
+        $self.pos,
+        String::from(format!("expect {:?}, got {:?}", $tok, $self.tok)),
+      );
+      0
+    }
+  };
+}
+
 /// statements
 impl Parser {
   fn parse_stmts(&mut self) -> Vec<Box<Stmt>> {
@@ -63,17 +79,16 @@ impl Parser {
       | Token::String(_)
       | Token::Add
       | Token::Sub => self.parse_simple_stmt(),
-      _ => Box::new(Stmt::Bad(BadStmt {})),
+      _ => {
+        self.next();
+        Box::new(Stmt::Bad(BadStmt {}))
+      }
     };
   }
 
   fn parse_decl_stmt(&mut self) -> Box<Stmt> {
     let decl: Box<Decl> = self.parse_decl();
-    if let Token::Semicolon = self.tok {
-      self.next();
-    } else {
-      self.error(self.pos, String::from("expected semiclon"))
-    }
+    expect!(self, Token::Semicolon);
     Box::new(Stmt::Decl(DeclStmt { decl }))
   }
 
@@ -85,11 +100,7 @@ impl Parser {
         let tok = self.tok.clone();
         self.next();
         let y = self.parse_expr();
-        if let Token::Semicolon = self.tok {
-          self.next();
-        } else {
-          self.error(self.pos, String::from("expected semiclon"))
-        }
+        expect!(self, Token::Semicolon);
         return Box::from(Stmt::Assign(AssignStmt {
           ptr: x,
           pos,
@@ -99,11 +110,7 @@ impl Parser {
       }
       _ => (),
     }
-    if let Token::Semicolon = self.tok {
-      self.next();
-    } else {
-      self.error(self.pos, String::from("expected semiclon"))
-    }
+    expect!(self, Token::Semicolon);
     Box::new(Stmt::Expr(ExprStmt { x }))
   }
 }
@@ -228,14 +235,7 @@ impl Parser {
         let l_pos = self.pos;
         self.next();
         let x = self.parse_expr();
-        let r_pos = if let Token::Rparen = self.tok {
-          let rp = self.pos;
-          self.next();
-          rp
-        } else {
-          self.error(self.pos, String::from("expected ')'"));
-          0
-        };
+        let r_pos = expect!(self, Token::Rparen);
         Box::new(Expr::Paren(ParenExpr { l_pos, x, r_pos }))
       }
       _ => {
@@ -252,23 +252,9 @@ impl Parser {
     } else {
       self.parse_unary_expr()
     };
-    let lp_pos = if let Token::Lparen = self.tok {
-      let lp = self.pos;
-      self.next();
-      lp
-    } else {
-      self.error(self.pos, String::from("expect Lparen"));
-      0
-    };
+    let lp_pos = expect!(self, Token::Lparen);
     let args = self.parse_expr_list(Option::None);
-    let rp_pos = if let Token::Rparen = self.tok {
-      let rp = self.pos;
-      self.next();
-      rp
-    } else {
-      self.error(self.pos, String::from("expect Rparen"));
-      0
-    };
+    let rp_pos = expect!(self, Token::Rparen);
     Box::from(Expr::Call(CallExpr {
       fun,
       lp_pos,
@@ -277,12 +263,12 @@ impl Parser {
     }))
   }
 
-  /// exprList ::= expr (',' expr)*;
+  /// exprList ::= expr (',' expr)* ','?;
   fn parse_expr_list(&mut self, xx: Option<Box<Expr>>) -> Vec<Box<Expr>> {
     let x = if let Option::Some(v) = xx {
       v
     } else {
-      self.parse_unary_expr()
+      self.parse_expr()
     };
     let mut ret: Vec<Box<Expr>> = vec![x];
     while let Token::Comma = self.tok {
